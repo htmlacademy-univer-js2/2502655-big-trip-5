@@ -9,10 +9,10 @@
     "start": "webpack serve --mode development --open"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
     "acorn-import-attributes": "^1.9.5",
-    "babel-loader": "^9.1.2",
+    "babel-loader": "^9.2.1",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "eslint": "^8.38.0",
@@ -28,8 +28,8 @@
   },
   "browserslist": [
     "last 2 versions",
-    "> 1%",
-    "not dead"
+    "not dead",
+    "not IE 11"
   ],
   "dependencies": {
     "dayjs": "^1.11.7",
