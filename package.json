@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src/",
     "build": "webpack --mode production",
-    "start": "webpack serve --mode development --open"
+    "start": "webpack serve --mode development --open",
+    "button": "webpack --mode production"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
