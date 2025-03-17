@@ -11,5 +11,9 @@ Thumbs.db
 *.log*
 node_modules/
 
+
+
+
 # Собранные файлы
 /build/
+
