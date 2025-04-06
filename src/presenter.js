@@ -58,5 +58,6 @@ export default class Presenter {
       replace(pointView, editFormView);
       document.removeEventListener('keydown', this._handleEscKey);
     }
+
   }
 }
