@@ -32,6 +32,7 @@ export default class FilterPresenter {
   init() {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
+    document.addEventListener('keydown', this.#escKeyDownHandler);
 
     this.#filterComponent = new FilterView({
       filters,
