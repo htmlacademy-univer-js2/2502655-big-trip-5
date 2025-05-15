@@ -1,15 +1,22 @@
 import Observable from '../framework/observable.js';
-import {FilterType} from '../utils/filter.js';
+// import {FilterType} from '../mock/const.js';
+
+export const FilterType = {
+  EVERYTHING: 'EVERYTHING',
+  FUTURE: 'FUTURE',
+  PRESENT: 'PRESENT',
+  PAST: 'PAST'
+};
 
 export default class FilterModel extends Observable {
   #filter = FilterType.EVERYTHING;
 
-  get filter() {
+  get() {
     return this.#filter;
   }
 
-  setFilter(updateType, filter) {
-    this.#filter = filter;
-    this._notify(updateType, filter);
+  set(updateType, update) {
+    this.#filter = update;
+    this._notify(updateType, update);
   }
 }
