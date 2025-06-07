@@ -109,7 +109,7 @@ export default class PagePresenter {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
         if (!update.id) {
-          console.error('Попытка обновить event без ID:', update);
+          //console.error('Попытка обновить event без ID:', update);
           return;
         }
 

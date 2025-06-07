@@ -154,7 +154,7 @@ export default class EventPresenter {
 
   #handleFormSubmit = (event) => {
     if (!event.id) {
-      console.error(' Попытка обновить event без ID:', event);
+      //console.error(' Попытка обновить event без ID:', event);
       return;
     }
     this.#handleDataChange(

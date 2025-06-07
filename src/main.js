@@ -54,10 +54,10 @@ async function initializeApp() {
       offersModel.init(),
       eventsModel.init(),
     ]);
-    // console.log('All models initialized successfully');
-    // console.log('EventsModel:', eventsModel.getEvents());
-    // console.log('DestinationsModel:', destinationsModel.destinations);
-    console.log('OffersModel:', offersModel.offers);
+    //console.log('All models initialized successfully');
+   // console.log('EventsModel:', eventsModel.getEvents());
+   // console.log('DestinationsModel:', destinationsModel.destinations);
+   // console.log('OffersModel:', offersModel.offers);
     pagePresenter.init();
     filterPresenter.init();
   } catch (err) {
