@@ -57,14 +57,9 @@ export default class AbstractView {
       callback?.();
     }, SHAKE_ANIMATION_TIMEOUT);
   }
-
-
 }
-
 
 /**
  * Функция, которая будет вызвана методом shake после завершения анимации
  * @callback shakeCallback
- */
-
  */
