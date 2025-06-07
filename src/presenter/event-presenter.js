@@ -174,7 +174,7 @@ export default class EventPresenter {
 
   #handleFavoriteClick = () => {
     if (!this.#event.id) {
-      console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
+      //console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
       return;
     }
 
