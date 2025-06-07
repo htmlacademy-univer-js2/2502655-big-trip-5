@@ -48,7 +48,7 @@ const filterPresenter = new FilterPresenter({
 });
 
 eventsModel.init().then(() => {
-  console.log('EventsModel initialized', eventsModel.getEvents());
+  //console.log('EventsModel initialized', eventsModel.getEvents());
   pagePresenter.init();
   filterPresenter.init();
 }).catch((err) => {
