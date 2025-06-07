@@ -20,17 +20,13 @@ export default class ApiService {
    * @param {Headers} [config.headers] Заголовки запроса
    * @returns {Promise<Response>}
    */
-  async _load({
-    url,
-    method = 'GET',
-    body = null,
-    headers = new Headers(),
-  }) {
-    headers.append('Authorization', this._authorization);
+  async _load({ url, method = 'GET', body = null, headers = new Headers() }) {
+    const requestHeaders = new Headers(headers);
+    requestHeaders.set('Authorization', this._authorization);
 
     const response = await fetch(
-      `${this._endPoint}/${url}`,
-      {method, body, headers},
+      `${this._endPoint}${url ? `/${url}` : ''}`,
+      { method, body, headers: requestHeaders }
     );
 
     try {
@@ -38,7 +34,16 @@ export default class ApiService {
       return response;
     } catch (err) {
       ApiService.catchError(err);
+      throw err;
     }
+  }
+
+  /**
+   * Метод для получения списка точек маршрута
+   * @returns {Promise<any>}
+   */
+  async getPoints() {
+    return this._load({ url: 'points' });
   }
 
   /**
@@ -47,6 +52,9 @@ export default class ApiService {
    * @returns {Promise}
    */
   static parseResponse(response) {
+    if (!response || typeof response.json !== 'function') {
+      throw new Error('Invalid response: No JSON data available');
+    }
     return response.json();
   }
 
@@ -64,7 +72,7 @@ export default class ApiService {
    * Метод для обработки ошибок
    * @param {Error} err Объект ошибки
    */
-  static catchError(err) {
-    throw err;
+  static catchError() {
+    // Ошибка логируется при необходимости
   }
 }

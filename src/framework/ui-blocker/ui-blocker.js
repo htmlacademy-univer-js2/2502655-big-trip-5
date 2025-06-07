@@ -24,10 +24,10 @@ export default class UiBlocker {
 
   /**
    * @param {Object} config Объект с настройками блокировщика
-   * @param {number} config.lowerLimit Время до блокировки интерфейса в миллисекундах. Если вызвать метод unblock раньше, то интерфейс заблокирован не будет
-   * @param {number} config.upperLimit Минимальное время блокировки в миллисекундах. Минимальная длительность блокировки
+   * @param {number} config.lowerLimit Время до блокировки интерфейса в миллисекундах
+   * @param {number} config.upperLimit Минимальное время блокировки в миллисекундах
    */
-  constructor({lowerLimit, upperLimit}) {
+  constructor({ lowerLimit, upperLimit }) {
     this.#lowerLimit = lowerLimit;
     this.#upperLimit = upperLimit;
 
@@ -59,7 +59,7 @@ export default class UiBlocker {
       return;
     }
 
-    setTimeout(this.#disactivateBlocking, this.#upperLimit - duration);
+    setTimeout(() => this.#disactivateBlocking(), this.#upperLimit - duration);
   }
 
   /** Метод, добавляющий CSS-класс и обработчик */
@@ -78,3 +78,4 @@ export default class UiBlocker {
     evt.preventDefault();
   };
 }
+
