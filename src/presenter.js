@@ -3,6 +3,14 @@ import SortView from './view/sort.js';
 import CreateFormView from './view/create-form.js';
 import EditFormView from './view/edit-form.js';
 import PointView from './view/point.js';
+import Model from './model/model.js';
+import { render, replace } from './render.js';
+
+
+// export default class Presenter {
+//   constructor() {
+//     this.model = new Model();
+//   }
 
 export default class Presenter {
   constructor() {
@@ -11,14 +19,6 @@ export default class Presenter {
     this.createFormView = new CreateFormView();
     this.editFormView = new EditFormView();
     this.pointViews = [new PointView(), new PointView(), new PointView()];
-import Model from './model/model.js';
-import PointView from './view/point.js';
-import EditFormView from './view/edit-form.js';
-import { render, replace } from './render.js';
-
-export default class Presenter {
-  constructor() {
-    this.model = new Model();
   }
 
   init() {

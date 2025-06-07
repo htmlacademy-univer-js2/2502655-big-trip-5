@@ -6,7 +6,7 @@ const eventsUrl = 'points';
 export default class EventsApiService extends ApiService {
   get events() {
     return this._load({url: eventsUrl})
-      .then(ApiService.parseResponse);
+      // .then(ApiService.parseResponse);
   }
 
   async updateEvent(event) {

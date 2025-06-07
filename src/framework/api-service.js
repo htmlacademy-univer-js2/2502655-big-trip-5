@@ -1,6 +1,6 @@
 /**
- * Класс для отправки запросов к серверу
- */
+      * Класс для отправки запросов к серверу
+      */
 export default class ApiService {
   /**
    * @param {string} endPoint Адрес сервера
@@ -18,27 +18,30 @@ export default class ApiService {
    * @param {string} [config.method] Метод запроса
    * @param {string} [config.body] Тело запроса
    * @param {Headers} [config.headers] Заголовки запроса
-   * @returns {Promise<Response>}
+   * @returns {Promise<any>}
    */
-  async _load({
-    url,
-    method = 'GET',
-    body = null,
-    headers = new Headers(),
-  }) {
+  async _load({ url, method = 'GET', body = null, headers = new Headers() }) {
     headers.append('Authorization', this._authorization);
 
     const response = await fetch(
-      `${this._endPoint}/${url}`,
-      {method, body, headers},
+      `${this._endPoint}${url ? '/' + url : ''}`, // Корректное формирование URL
+      { method, body, headers }
     );
 
     try {
       ApiService.checkStatus(response);
-      return response;
+      return await ApiService.parseResponse(response);
     } catch (err) {
       ApiService.catchError(err);
     }
+  }
+
+  /**
+   * Метод для получения списка точек маршрута
+   * @returns {Promise<any>}
+   */
+  async getPoints() {
+    return this._load({ url: 'points' });
   }
 
   /**
@@ -67,8 +70,4 @@ export default class ApiService {
   static catchError(err) {
     throw err;
   }
-
 }
-
-}
-

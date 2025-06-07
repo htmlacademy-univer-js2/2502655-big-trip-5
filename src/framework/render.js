@@ -80,5 +80,4 @@ function remove(component) {
 
 export {RenderPosition, createElement, render, replace, remove};
 
-export {RenderPosition, createElement, render, replace, remove};
 

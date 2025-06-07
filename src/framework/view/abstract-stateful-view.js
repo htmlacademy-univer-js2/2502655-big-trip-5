@@ -52,5 +52,5 @@ export default class AbstractStatefulView extends AbstractView {
 
 }
 
-}
+
 

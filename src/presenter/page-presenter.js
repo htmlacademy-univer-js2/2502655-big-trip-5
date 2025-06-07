@@ -100,7 +100,7 @@ export default class PagePresenter {
   #handleModeChange = () => {
     this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
+  }
 
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
@@ -133,7 +133,7 @@ export default class PagePresenter {
     }
 
     this.#uiBlocker.unblock();
-  };
+  }
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
@@ -154,7 +154,7 @@ export default class PagePresenter {
         this.#renderBoard();
         break;
     }
-  };
+  }
 
   #handleSortFormChange = (sortType) => {
     this.#currentSortType = sortType;
@@ -236,5 +236,5 @@ export default class PagePresenter {
   #resetCreating = () => {
     this.#isCreating = false;
     this.#renderNoEventsIfNeeded();
-  };
+  }
 }

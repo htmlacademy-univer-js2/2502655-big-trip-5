@@ -24,10 +24,10 @@ export default class UiBlocker {
 
   /**
    * @param {Object} config Объект с настройками блокировщика
-   * @param {number} config.lowerLimit Время до блокировки интерфейса в миллисекундах. Если вызвать метод unblock раньше, то интерфейс заблокирован не будет
-   * @param {number} config.upperLimit Минимальное время блокировки в миллисекундах. Минимальная длительность блокировки
+   * @param {number} config.lowerLimit Время до блокировки интерфейса в миллисекундах
+   * @param {number} config.upperLimit Минимальное время блокировки в миллисекундах
    */
-  constructor({lowerLimit, upperLimit}) {
+  constructor({ lowerLimit, upperLimit }) {
     this.#lowerLimit = lowerLimit;
     this.#upperLimit = upperLimit;
 
@@ -40,11 +40,7 @@ export default class UiBlocker {
   block() {
     this.#startTime = Date.now();
     this.#timerId = setTimeout(() => {
-
-      this.#addClass();
-
       this.#activateBlocking();
-
     }, this.#lowerLimit);
   }
 
@@ -59,30 +55,11 @@ export default class UiBlocker {
     }
 
     if (duration >= this.#upperLimit) {
-
-      this.#removeClass();
-      return;
-    }
-
-    setTimeout(this.#removeClass, this.#upperLimit - duration);
-  }
-
-  /** Метод, добавляющий CSS-класс элементу */
-  #addClass = () => {
-    this.#element.classList.add('ui-blocker--on');
-  };
-
-  /** Метод, убирающий CSS-класс с элемента */
-  #removeClass = () => {
-    this.#element.classList.remove('ui-blocker--on');
-  };
-}
-
       this.#disactivateBlocking();
       return;
     }
 
-    setTimeout(this.#disactivateBlocking, this.#upperLimit - duration);
+    setTimeout(() => this.#disactivateBlocking(), this.#upperLimit - duration);
   }
 
   /** Метод, добавляющий CSS-класс и обработчик */
@@ -101,4 +78,3 @@ export default class UiBlocker {
     evt.preventDefault();
   };
 }
-
