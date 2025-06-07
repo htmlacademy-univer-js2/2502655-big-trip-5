@@ -1,6 +1,6 @@
 /**
-      * Класс для отправки запросов к серверу
-      */
+ * Класс для отправки запросов к серверу
+ */
 export default class ApiService {
   /**
    * @param {string} endPoint Адрес сервера
@@ -18,21 +18,25 @@ export default class ApiService {
    * @param {string} [config.method] Метод запроса
    * @param {string} [config.body] Тело запроса
    * @param {Headers} [config.headers] Заголовки запроса
-   * @returns {Promise<any>}
+   * @returns {Promise<Response>}
    */
   async _load({ url, method = 'GET', body = null, headers = new Headers() }) {
-    headers.append('Authorization', this._authorization);
+    const requestHeaders = new Headers(headers);
+    requestHeaders.set('Authorization', this._authorization);
+
+    console.log(`Sending request: ${method} ${this._endPoint}/${url} with Authorization: ${this._authorization}`);
 
     const response = await fetch(
-      `${this._endPoint}${url ? '/' + url : ''}`, // Корректное формирование URL
-      { method, body, headers }
+      `${this._endPoint}${url ? '/' + url : ''}`,
+      { method, body, headers: requestHeaders }
     );
 
     try {
       ApiService.checkStatus(response);
-      return await ApiService.parseResponse(response);
+      return response; // ✅ возвращаем Response, JSON будет парситься снаружи
     } catch (err) {
       ApiService.catchError(err);
+      throw err; 
     }
   }
 
@@ -50,6 +54,9 @@ export default class ApiService {
    * @returns {Promise}
    */
   static parseResponse(response) {
+    if (!response || typeof response.json !== 'function') {
+      throw new Error('Invalid response: No JSON data available');
+    }
     return response.json();
   }
 
@@ -68,6 +75,6 @@ export default class ApiService {
    * @param {Error} err Объект ошибки
    */
   static catchError(err) {
-    throw err;
+    console.error('API Error:', err.message);
   }
 }

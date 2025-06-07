@@ -11,7 +11,6 @@ import OffersApiService from './offers-api-service.js';
 const END_POINT = 'https://24.objects.htmlacademy.pro/big-trip';
 const AUTHORIZATION = 'Basic eo0w590ik29889a';
 
-
 const tripMainElement = document.querySelector('.trip-main');
 const eventsContainer = document.querySelector('.trip-events');
 
@@ -30,14 +29,15 @@ const eventsModel = new EventsModel({
 });
 
 const filterModel = new FilterModel();
-
+const newEventButton = document.querySelector('.trip-main__event-add-btn');
 const pagePresenter = new PagePresenter({
   mainContainer: tripMainElement,
   eventsContainer,
   eventsModel,
-  destinationsModel: destinationsModel, //eventsModel.destinationsModel,
-  offersModel: offersModel, //eventsModel.offersModel,
+  destinationsModel,
+  offersModel,
   filterModel,
+  newEventButton,
   onNewEventDestroy: () => pagePresenter.resetCreating(),
 });
 
@@ -47,12 +47,32 @@ const filterPresenter = new FilterPresenter({
   eventsModel,
 });
 
-eventsModel.init().then(() => {
-  //console.log('EventsModel initialized', eventsModel.getEvents());
-  pagePresenter.init();
-  filterPresenter.init();
-}).catch((err) => {
-  console.error('Failed to initialize EventsModel:', err);
-  pagePresenter.init();
-  filterPresenter.init();
-});
+async function initializeApp() {
+  try {
+    await Promise.all([
+      destinationsModel.init(),
+      offersModel.init(),
+      eventsModel.init(),
+    ]);
+    console.log('All models initialized successfully');
+    console.log('EventsModel:', eventsModel.getEvents());
+    console.log('DestinationsModel:', destinationsModel.destinations);
+    console.log('OffersModel:', offersModel.offers);
+    pagePresenter.init();
+    filterPresenter.init();
+  } catch (err) {
+    console.error('Failed to initialize models:', err.message);
+    pagePresenter.init();
+    filterPresenter.init();
+  }
+}
+
+initializeApp();
+const start = async () => {
+  await initializeApp();
+  newEventButton.addEventListener('click', () => {
+    pagePresenter.createEvent();
+  });
+};
+
+start();

@@ -169,12 +169,12 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    const updatedEvent = { ...this.#event, isFavorite: !this.#event.isFavorite };
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
-      {...this.#event, isFavorite: !this.#event.isFavorite}
+      updatedEvent
     );
   };
 }
