@@ -50,7 +50,3 @@ export default class AbstractStatefulView extends AbstractView {
     this._restoreHandlers();
   }
 
-}
-
-
-

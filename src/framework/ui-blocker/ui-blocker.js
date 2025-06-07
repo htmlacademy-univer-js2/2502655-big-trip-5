@@ -77,4 +77,4 @@ export default class UiBlocker {
   #documentKeydownHandler = (evt) => {
     evt.preventDefault();
   };
-}
+

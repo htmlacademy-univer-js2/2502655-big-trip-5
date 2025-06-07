@@ -17,4 +17,22 @@ export default class AbstractView {
   removeElement() {
     this.#element = null;
   }
+
+  /**
+   * Метод, реализующий эффект "покачивания головой"
+   * @param {shakeCallback} [callback] Функция, которая будет вызвана после завершения анимации
+   */
+  shake(callback) {
+    this.element.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      this.element.classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
 }
+
+/**
+ * Функция, которая будет вызвана методом shake после завершения анимации
+ * @callback shakeCallback
+ */
+
