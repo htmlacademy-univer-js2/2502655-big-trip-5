@@ -61,7 +61,7 @@ async function initializeApp() {
     pagePresenter.init();
     filterPresenter.init();
   } catch (err) {
-    console.error('Failed to initialize models:', err.message);
+    //console.error('Failed to initialize models:', err.message);
     pagePresenter.init();
     filterPresenter.init();
   }
