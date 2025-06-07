@@ -69,7 +69,7 @@ export default class EventsModel extends Observable {
       const adaptedEvent = this.#adaptToServer(update);
       const response = await this.#eventsApiService.addEvent(adaptedEvent);
       const newEvent = this.#adaptToClient(response);
-
+  
       this.#events = [newEvent, ...this.#events];
       this._notify(updateType, newEvent);
     } catch (err) {
@@ -117,16 +117,15 @@ export default class EventsModel extends Observable {
 
   #adaptToServer(event) {
     return {
-      id: event.id,
       type: event.type,
       'base_price': Number(event.basePrice),
       'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : event.dateFrom,
       'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : event.dateTo,
-      'is_favorite': Boolean(event.isFavorite),
-      'destination': event.destination, // объект { name, description, pictures }
+      'destination': event.destination,
       'offers': Array.isArray(event.offers)
         ? event.offers.map((offer) => typeof offer === 'object' ? offer.id : offer)
-        : []
+        : [],
+      'is_favorite': Boolean(event.isFavorite),
     };
   }
 }

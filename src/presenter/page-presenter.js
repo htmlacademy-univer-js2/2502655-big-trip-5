@@ -107,18 +107,19 @@ export default class PagePresenter {
 
   #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
-      case UserAction.UPDATE_EVENT: {
-        const presenter = this.#eventPresenters.get(update.id);
-        if (!presenter) return;
+      case UserAction.UPDATE_EVENT:
+        if (!update.id) {
+          console.error('Попытка обновить event без ID:', update);
+          return;
+        }
   
-        presenter.setSaving();
+        this.#eventPresenters.get(update.id).setSaving();
         try {
           await this.#eventsModel.updateEvent(updateType, update);
         } catch (err) {
-          presenter.setAborting();
+          this.#eventPresenters.get(update.id).setAborting();
         }
         break;
-      }
   
       case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
