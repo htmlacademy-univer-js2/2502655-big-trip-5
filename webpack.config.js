@@ -63,7 +63,7 @@ module.exports = {
       directory: path.join(__dirname, 'build'), // Директория для dev-server
     },
     compress: true, // Сжатие файлов
-    port: 9000, // Порт для dev-server
+    port: 8080, // Порт для dev-server
     open: true, // Автоматически открывать браузер
   },
 
