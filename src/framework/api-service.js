@@ -27,7 +27,7 @@ export default class ApiService {
     console.log(`Sending request: ${method} ${this._endPoint}/${url} with Authorization: ${this._authorization}`);
 
     const response = await fetch(
-      `${this._endPoint}${url ? '/' + url : ''}`,
+      `${this._endPoint}${url ? `/${ url}` : ''}`,
       { method, body, headers: requestHeaders }
     );
 
@@ -36,7 +36,7 @@ export default class ApiService {
       return response; // ✅ возвращаем Response, JSON будет парситься снаружи
     } catch (err) {
       ApiService.catchError(err);
-      throw err; 
+      throw err;
     }
   }
 

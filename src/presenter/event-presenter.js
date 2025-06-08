@@ -177,16 +177,15 @@ export default class EventPresenter {
       console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
       return;
     }
-  
+
     const updatedEvent = { ...this.#event, isFavorite: !this.#event.isFavorite };
-  
+
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
       updatedEvent
     );
   };
-  
 
-  
+
 }

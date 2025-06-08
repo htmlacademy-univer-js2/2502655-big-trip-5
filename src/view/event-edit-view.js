@@ -201,9 +201,10 @@ export default class EventEditView extends AbstractStatefulView {
 
     this._restoreHandlers();
   }
+
   shake() {
     this.element.classList.add('shake');
-  
+
     setTimeout(() => {
       this.element.classList.remove('shake');
     }, 600);
@@ -298,7 +299,7 @@ export default class EventEditView extends AbstractStatefulView {
         offers: []
       });
     }
-    
+
   };
 
   #destinationChangeHandler = (evt) => {
