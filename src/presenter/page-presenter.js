@@ -100,7 +100,9 @@ export default class PagePresenter {
   async handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        if (!update.id) return;
+        if (!update.id) {
+          return;
+        }
 
         this.#eventPresenters.get(update.id).setSaving();
         try {
@@ -121,7 +123,9 @@ export default class PagePresenter {
 
       case UserAction.DELETE_EVENT: {
         const presenter = this.#eventPresenters.get(update.id);
-        if (!presenter) return;
+        if (!presenter) {
+          return;
+        }
 
         presenter.setDeleting();
         try {

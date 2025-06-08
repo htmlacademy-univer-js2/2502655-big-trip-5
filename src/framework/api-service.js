@@ -38,7 +38,7 @@ export default class ApiService {
     }
   }
 
-  static catchError(err) {
+  static catchError() {
     // intentionally left blank
   }
 }
