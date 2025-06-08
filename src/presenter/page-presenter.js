@@ -17,6 +17,8 @@ const TimeLimit = {
 };
 
 export default class PagePresenter {
+
+  #newEventButton = null;
   #eventsListComponent = new EventsListView();
   #loadingComponent = new LoadingView();
   #noEventsComponent = null;
@@ -44,13 +46,14 @@ export default class PagePresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({mainContainer, eventsContainer, eventsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy}) {
+  constructor({mainContainer, eventsContainer, eventsModel, destinationsModel,newEventButton, offersModel, filterModel, onNewEventDestroy}) {
     this.#mainContainer = mainContainer;
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+    this.#newEventButton = newEventButton;
 
     this.#tripInfoPresenter = new TripInfoPresenter({
       tripInfoContainer: this.#mainContainer,
@@ -71,7 +74,7 @@ export default class PagePresenter {
       onDestroy: onNewEventDestroy,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      resetCreating: this.#resetCreating,
+      resetCreating: this.resetCreating,
     });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -103,33 +106,46 @@ export default class PagePresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
-    this.#uiBlocker.block();
-
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
+        if (!update.id) {
+          //console.error('Попытка обновить event без ID:', update);
+          return;
+        }
+
         this.#eventPresenters.get(update.id).setSaving();
         try {
           await this.#eventsModel.updateEvent(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#eventPresenters.get(update.id).setAborting();
         }
         break;
+
       case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
         try {
           await this.#eventsModel.addEvent(updateType, update);
-        } catch(err) {
+        } catch (err) {
           this.#newEventPresenter.setAborting();
         }
         break;
-      case UserAction.DELETE_EVENT:
-        this.#eventPresenters.get(update.id).setDeleting();
+
+      case UserAction.DELETE_EVENT: {
+        const presenter = this.#eventPresenters.get(update.id);
+        if (!presenter) {
+          return;
+        }
+
+        presenter.setDeleting();
         try {
           await this.#eventsModel.deleteEvent(updateType, update);
-        } catch(err) {
-          this.#eventPresenters.get(update.id).setAborting();
+          presenter.destroy();
+          this.#eventPresenters.delete(update.id);
+        } catch (err) {
+          presenter.setAborting();
         }
         break;
+      }
     }
 
     this.#uiBlocker.unblock();
@@ -233,8 +249,10 @@ export default class PagePresenter {
     this.#renderSort();
   }
 
-  #resetCreating = () => {
+  resetCreating = () => {
     this.#isCreating = false;
+    this.#newEventButton.disabled = false;
     this.#renderNoEventsIfNeeded();
   };
 }
+

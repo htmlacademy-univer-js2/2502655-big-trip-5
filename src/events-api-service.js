@@ -1,47 +1,36 @@
-import ApiService from './framework/api-service';
-import {Method} from './utils/const';
+import ApiService from './framework/api-service.js';
 
 const eventsUrl = 'points';
 
 export default class EventsApiService extends ApiService {
   get events() {
-    return this._load({url: eventsUrl})
+    return this._load({ url: eventsUrl })
       .then(ApiService.parseResponse);
   }
 
-  async updateEvent(event) {
-    const response = await this._load({
-      url: `${eventsUrl}/${event.id}`,
-      method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(event)),
-      headers: new Headers({'Content-Type': 'application/json'}),
-    });
-
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
-  }
-
-  async addEvent(event) {
-    const response = await this._load({
+  addEvent(event) {
+    return this._load({
       url: eventsUrl,
-      method: Method.POST,
-      body: JSON.stringify(this.#adaptToServer(event)),
-      headers: new Headers({'Content-Type': 'application/json'}),
-    });
-
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+      method: 'POST',
+      body: JSON.stringify(event),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    }).then(ApiService.parseResponse);
   }
 
-  async deleteEvent(event) {
-    const response = await this._load({
+  updateEvent(event) {
+    return this._load({
       url: `${eventsUrl}/${event.id}`,
-      method: Method.DELETE,
-    });
+      method: 'PUT',
+      body: JSON.stringify(event),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    }).then(ApiService.parseResponse);
+  }
 
-    return response;
+  deleteEvent(event) {
+    return this._load({
+      url: `${eventsUrl}/${event.id}`,
+      method: 'DELETE',
+    });
   }
 
   #adaptToServer(event) {
@@ -60,4 +49,3 @@ export default class EventsApiService extends ApiService {
 
     return adaptedEvent;
   }
-}
