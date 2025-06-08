@@ -30,6 +30,7 @@ const eventsModel = new EventsModel({
 
 const filterModel = new FilterModel();
 const newEventButton = document.querySelector('.trip-main__event-add-btn');
+
 const pagePresenter = new PagePresenter({
   mainContainer: tripMainElement,
   eventsContainer,
@@ -54,20 +55,15 @@ async function initializeApp() {
       offersModel.init(),
       eventsModel.init(),
     ]);
-    console.log('All models initialized successfully');
-    console.log('EventsModel:', eventsModel.getEvents());
-    console.log('DestinationsModel:', destinationsModel.destinations);
-    console.log('OffersModel:', offersModel.offers);
+
     pagePresenter.init();
     filterPresenter.init();
-  } catch (err) {
-    console.error('Failed to initialize models:', err.message);
+  } catch {
     pagePresenter.init();
     filterPresenter.init();
   }
 }
 
-initializeApp();
 const start = async () => {
   await initializeApp();
   newEventButton.addEventListener('click', () => {

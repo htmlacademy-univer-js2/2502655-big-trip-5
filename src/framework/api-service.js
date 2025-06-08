@@ -21,24 +21,22 @@ export default class ApiService {
    * @returns {Promise<Response>}
    */
   async _load({ url, method = 'GET', body = null, headers = new Headers() }) {
-    const requestHeaders = new Headers(headers);
-    requestHeaders.set('Authorization', this._authorization);
+  const requestHeaders = new Headers(headers);
+  requestHeaders.set('Authorization', this._authorization);
 
-    console.log(`Sending request: ${method} ${this._endPoint}/${url} with Authorization: ${this._authorization}`);
+  const response = await fetch(
+    `${this._endPoint}${url ? '/' + url : ''}`,
+    { method, body, headers: requestHeaders }
+  );
 
-    const response = await fetch(
-      `${this._endPoint}${url ? `/${ url}` : ''}`,
-      { method, body, headers: requestHeaders }
-    );
-
-    try {
-      ApiService.checkStatus(response);
-      return response; // ✅ возвращаем Response, JSON будет парситься снаружи
-    } catch (err) {
-      ApiService.catchError(err);
-      throw err;
-    }
+  try {
+    ApiService.checkStatus(response);
+    return response;
+  } catch (err) {
+    throw err;
   }
+}
+
 
   /**
    * Метод для получения списка точек маршрута
@@ -68,13 +66,5 @@ export default class ApiService {
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
-  }
-
-  /**
-   * Метод для обработки ошибок
-   * @param {Error} err Объект ошибки
-   */
-  static catchError(err) {
-    console.error('API Error:', err.message);
   }
 }

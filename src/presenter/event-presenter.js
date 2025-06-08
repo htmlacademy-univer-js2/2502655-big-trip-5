@@ -1,7 +1,7 @@
-import {render, replace, remove} from '../framework/render';
+import { render, replace, remove } from '../framework/render';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
-import {UserAction, UpdateType} from '../utils/const';
+import { UserAction, UpdateType } from '../utils/const';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -9,66 +9,57 @@ const Mode = {
 };
 
 export default class EventPresenter {
-  #eventsListContainer = null;
+  constructor({ eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange }) {
+    this.eventsListContainer = eventsListContainer;
+    this.destinationsModel = destinationsModel;
+    this.offersModel = offersModel;
+    this.handleDataChange = onDataChange;
+    this.handleModeChange = onModeChange;
 
-  #handleDataChange = null;
-  #handleModeChange = null;
+    this.eventComponent = null;
+    this.eventEditComponent = null;
 
-  #eventComponent = null;
-  #eventEditComponent = null;
-
-  #event = null;
-  #mode = Mode.DEFAULT;
-
-  #destinationsModel = null;
-  #destinations = [];
-
-  #offersModel = null;
-  #offers = [];
-
-  constructor({eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
-    this.#eventsListContainer = eventsListContainer;
-    this.#destinationsModel = destinationsModel;
-    this.#offersModel = offersModel;
-    this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
+    this.event = null;
+    this.mode = Mode.DEFAULT;
+    this.destinations = [];
+    this.offers = [];
   }
 
   init(event) {
-    this.#event = event;
-    this.#destinations = this.#destinationsModel.destinations;
-    this.#offers = this.#offersModel.offers;
+    this.event = event;
+    this.destinations = this.destinationsModel.destinations;
+    this.offers = this.offersModel.offers;
 
-    const prevEventComponent = this.#eventComponent;
-    const prevEventEditComponent = this.#eventEditComponent;
+    const prevEventComponent = this.eventComponent;
+    const prevEventEditComponent = this.eventEditComponent;
 
-    this.#eventComponent = new EventView({
-      event: this.#event,
-      destinations: this.#destinations,
-      offers: this.#offers,
-      onEditClick: this.#handleEditClick,
-      onFavoriteClick: this.#handleFavoriteClick,
+    this.eventComponent = new EventView({
+      event: this.event,
+      destinations: this.destinations,
+      offers: this.offers,
+      onEditClick: this.handleEditClick,
+      onFavoriteClick: this.handleFavoriteClick,
     });
 
-    this.#eventEditComponent = new EventEditView({
-      event: this.#event,
-      destinations: this.#destinations,
-      offers: this.#offers,
-      onFormSubmit: this.#handleFormSubmit,
-      onResetClick: this.#handleResetClick,
-      onDeleteClick: this.#handleDeleteClick,
+    this.eventEditComponent = new EventEditView({
+      event: this.event,
+      destinations: this.destinations,
+      offers: this.offers,
+      onFormSubmit: this.handleFormSubmit,
+      onResetClick: this.handleResetClick,
+      onDeleteClick: this.handleDeleteClick,
     });
 
     if (!prevEventComponent || !prevEventEditComponent) {
-      render(this.#eventComponent, this.#eventsListContainer);
+      render(this.eventComponent, this.eventsListContainer);
       return;
     }
 
-    if (this.#mode === Mode.DEFAULT) {
-      replace(this.#eventComponent, prevEventComponent);
-    } else if (this.#mode === Mode.EDITING) {
-      replace(this.#eventComponent, prevEventEditComponent);
-      this.#mode = Mode.DEFAULT;
+    if (this.mode === Mode.DEFAULT) {
+      replace(this.eventComponent, prevEventComponent);
+    } else if (this.mode === Mode.EDITING) {
+      replace(this.eventComponent, prevEventEditComponent);
+      this.mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
@@ -76,20 +67,20 @@ export default class EventPresenter {
   }
 
   destroy() {
-    remove(this.#eventComponent);
-    remove(this.#eventEditComponent);
+    remove(this.eventComponent);
+    remove(this.eventEditComponent);
   }
 
   resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#eventEditComponent.reset(this.#event);
-      this.#replaceFormToCard();
+    if (this.mode !== Mode.DEFAULT) {
+      this.eventEditComponent.reset(this.event);
+      this.replaceFormToCard();
     }
   }
 
   setSaving() {
-    if (this.#mode === Mode.EDITING) {
-      this.#eventEditComponent.updateElement({
+    if (this.mode === Mode.EDITING) {
+      this.eventEditComponent.updateElement({
         isDisabled: true,
         isSaving: true,
       });
@@ -97,8 +88,8 @@ export default class EventPresenter {
   }
 
   setDeleting() {
-    if (this.#mode === Mode.EDITING) {
-      this.#eventEditComponent.updateElement({
+    if (this.mode === Mode.EDITING) {
+      this.eventEditComponent.updateElement({
         isDisabled: true,
         isDeleting: true,
       });
@@ -106,86 +97,83 @@ export default class EventPresenter {
   }
 
   setAborting() {
-    if (this.#mode === Mode.DEFAULT) {
-      this.#eventComponent.shake();
+    if (this.mode === Mode.DEFAULT) {
+      this.eventComponent.shake();
       return;
     }
 
     const resetFormState = () => {
-      this.#eventEditComponent.updateElement({
+      this.eventEditComponent.updateElement({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
       });
     };
 
-    this.#eventEditComponent.shake(resetFormState);
+    this.eventEditComponent.shake(resetFormState);
   }
 
-  #replaceCardToForm() {
-    replace(this.#eventEditComponent, this.#eventComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#handleModeChange();
-    this.#mode = Mode.EDITING;
+  replaceCardToForm() {
+    replace(this.eventEditComponent, this.eventComponent);
+    document.addEventListener('keydown', this.escKeyDownHandler);
+    this.handleModeChange();
+    this.mode = Mode.EDITING;
   }
 
-  #replaceFormToCard() {
-    replace(this.#eventComponent, this.#eventEditComponent);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.DEFAULT;
+  replaceFormToCard() {
+    replace(this.eventComponent, this.eventEditComponent);
+    document.removeEventListener('keydown', this.escKeyDownHandler);
+    this.mode = Mode.DEFAULT;
   }
 
-  #escKeyDownHandler = (evt) => {
+  escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#eventEditComponent.reset(this.#event);
-      this.#replaceFormToCard();
+      this.eventEditComponent.reset(this.event);
+      this.replaceFormToCard();
     }
   };
 
-  #handleEditClick = () => {
-    this.#replaceCardToForm();
+  handleEditClick = () => {
+    this.replaceCardToForm();
   };
 
-  #handleResetClick = () => {
-    this.#eventEditComponent.reset(this.#event);
-    this.#replaceFormToCard();
+  handleResetClick = () => {
+    this.eventEditComponent.reset(this.event);
+    this.replaceFormToCard();
   };
 
-  #handleFormSubmit = (event) => {
+  handleFormSubmit = (event) => {
     if (!event.id) {
-      console.error(' Попытка обновить event без ID:', event);
       return;
     }
-    this.#handleDataChange(
+
+    this.handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       event,
     );
   };
 
-  #handleDeleteClick = (event) => {
-    this.#handleDataChange(
+  handleDeleteClick = (event) => {
+    this.handleDataChange(
       UserAction.DELETE_EVENT,
       UpdateType.MINOR,
       event,
     );
   };
 
-  #handleFavoriteClick = () => {
-    if (!this.#event.id) {
-      console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
+  handleFavoriteClick = () => {
+    if (!this.event.id) {
       return;
     }
 
-    const updatedEvent = { ...this.#event, isFavorite: !this.#event.isFavorite };
+    const updatedEvent = { ...this.event, isFavorite: !this.event.isFavorite };
 
-    this.#handleDataChange(
+    this.handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
       updatedEvent
     );
   };
-
-
 }
