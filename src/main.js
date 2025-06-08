@@ -15,62 +15,64 @@ const tripMainElement = document.querySelector('.trip-main');
 const eventsContainer = document.querySelector('.trip-events');
 
 const offersModel = new OffersModel({
-offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
+  offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
 });
 
 const destinationsModel = new DestinationsModel({
-destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
+  destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
 });
 
 const eventsModel = new EventsModel({
-eventsApiService: new EventsApiService(END_POINT, AUTHORIZATION),
-destinationsModel,
-offersModel,
+  eventsApiService: new EventsApiService(END_POINT, AUTHORIZATION),
+  destinationsModel: destinationsModel,
+  offersModel: offersModel,
 });
 
 const filterModel = new FilterModel();
 const newEventButton = document.querySelector('.trip-main__event-add-btn');
-
 const pagePresenter = new PagePresenter({
-mainContainer: tripMainElement,
-eventsContainer,
-eventsModel,
-destinationsModel,
-offersModel,
-filterModel,
-newEventButton,
-onNewEventDestroy: () => pagePresenter.resetCreating(),
+  mainContainer: tripMainElement,
+  eventsContainer,
+  eventsModel,
+  destinationsModel,
+  offersModel,
+  filterModel,
+  newEventButton,
+  onNewEventDestroy: () => pagePresenter.resetCreating(),
 });
 
 const filterPresenter = new FilterPresenter({
-filterContainer: tripMainElement.querySelector('.trip-controls__filters'),
-filterModel,
-eventsModel,
+  filterContainer: tripMainElement.querySelector('.trip-controls__filters'),
+  filterModel,
+  eventsModel,
 });
 
 async function initializeApp() {
-try {
-await Promise.all([
-destinationsModel.init(),
-offersModel.init(),
-eventsModel.init(),
-]);
-pagePresenter.init();
-filterPresenter.init();
-} catch (err) {
-// Можно записывать ошибку в мониторинг, если нужно
-pagePresenter.init();
-filterPresenter.init();
-}
+  try {
+    await Promise.all([
+      destinationsModel.init(),
+      offersModel.init(),
+      eventsModel.init(),
+    ]);
+    console.log('All models initialized successfully');
+    console.log('EventsModel:', eventsModel.getEvents());
+    console.log('DestinationsModel:', destinationsModel.destinations);
+    console.log('OffersModel:', offersModel.offers);
+    pagePresenter.init();
+    filterPresenter.init();
+  } catch (err) {
+    console.error('Failed to initialize models:', err.message);
+    pagePresenter.init();
+    filterPresenter.init();
+  }
 }
 
 initializeApp();
-
 const start = async () => {
-await initializeApp();
-newEventButton.addEventListener('click', () => {
-pagePresenter.createEvent();
-});
+  await initializeApp();
+  newEventButton.addEventListener('click', () => {
+    pagePresenter.createEvent();
+  });
 };
 
 start();

@@ -72,7 +72,7 @@ export default class EventView extends AbstractView {
 
   #handleRollupClick = null;
   #handleFavoriteClick = null;
-
+  
   shake() {
     this.element.classList.add('shake');
     setTimeout(() => {
@@ -91,7 +91,7 @@ export default class EventView extends AbstractView {
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupClickHandler);
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
-
+  
   }
 
   get template() {

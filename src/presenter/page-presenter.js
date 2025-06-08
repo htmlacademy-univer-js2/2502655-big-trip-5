@@ -17,8 +17,8 @@ const TimeLimit = {
 };
 
 export default class PagePresenter {
-
-  #newEventButton = null;
+  
+  #newEventButton= null;
   #eventsListComponent = new EventsListView();
   #loadingComponent = new LoadingView();
   #noEventsComponent = null;
@@ -103,7 +103,7 @@ export default class PagePresenter {
   #handleModeChange = () => {
     this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
+  }
 
   #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
@@ -112,7 +112,7 @@ export default class PagePresenter {
           console.error('Попытка обновить event без ID:', update);
           return;
         }
-
+  
         this.#eventPresenters.get(update.id).setSaving();
         try {
           await this.#eventsModel.updateEvent(updateType, update);
@@ -120,7 +120,7 @@ export default class PagePresenter {
           this.#eventPresenters.get(update.id).setAborting();
         }
         break;
-
+  
       case UserAction.ADD_EVENT:
         this.#newEventPresenter.setSaving();
         try {
@@ -129,13 +129,11 @@ export default class PagePresenter {
           this.#newEventPresenter.setAborting();
         }
         break;
-
+  
       case UserAction.DELETE_EVENT: {
         const presenter = this.#eventPresenters.get(update.id);
-        if (!presenter) {
-          return;
-        }
-
+        if (!presenter) return;
+  
         presenter.setDeleting();
         try {
           await this.#eventsModel.deleteEvent(updateType, update);
@@ -147,7 +145,7 @@ export default class PagePresenter {
         break;
       }
     }
-
+  
     this.#uiBlocker.unblock();
   };
 
@@ -170,7 +168,7 @@ export default class PagePresenter {
         this.#renderBoard();
         break;
     }
-  };
+  }
 
   #handleSortFormChange = (sortType) => {
     this.#currentSortType = sortType;
@@ -251,8 +249,8 @@ export default class PagePresenter {
 
   resetCreating = () => {
     this.#isCreating = false;
-    this.#newEventButton.disabled = false;
+    this.#newEventButton.disabled = false; 
     this.#renderNoEventsIfNeeded();
   };
-}
+  }
 
