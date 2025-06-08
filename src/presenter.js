@@ -3,7 +3,7 @@ import SortView from './view/sort.js';
 import CreateFormView from './view/create-form.js';
 import EditFormView from './view/edit-form.js';
 import PointView from './view/point.js';
-//import Model from './model/model.js';
+import Model from './model/model.js';
 import { render, replace } from './render.js';
 
 

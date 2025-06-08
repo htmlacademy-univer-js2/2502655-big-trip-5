@@ -18,4 +18,3 @@ export default class AbstractView {
     this.#element = null;
   }
 }
-

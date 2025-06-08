@@ -154,7 +154,7 @@ export default class EventPresenter {
 
   #handleFormSubmit = (event) => {
     if (!event.id) {
-      //console.error(' Попытка обновить event без ID:', event);
+      console.error(' Попытка обновить event без ID:', event);
       return;
     }
     this.#handleDataChange(
@@ -174,15 +174,19 @@ export default class EventPresenter {
 
   #handleFavoriteClick = () => {
     if (!this.#event.id) {
-      //console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
+      console.error(' Нельзя обновить isFavorite — у event нет id!', this.#event);
       return;
     }
-
+  
     const updatedEvent = { ...this.#event, isFavorite: !this.#event.isFavorite };
-
+  
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
       updatedEvent
     );
   };
+  
+
+  
+}

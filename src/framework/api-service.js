@@ -24,17 +24,19 @@ export default class ApiService {
     const requestHeaders = new Headers(headers);
     requestHeaders.set('Authorization', this._authorization);
 
+    console.log(`Sending request: ${method} ${this._endPoint}/${url} with Authorization: ${this._authorization}`);
+
     const response = await fetch(
-      `${this._endPoint}${url ? `/${url}` : ''}`,
+      `${this._endPoint}${url ? '/' + url : ''}`,
       { method, body, headers: requestHeaders }
     );
 
     try {
       ApiService.checkStatus(response);
-      return response;
+      return response; // ✅ возвращаем Response, JSON будет парситься снаружи
     } catch (err) {
       ApiService.catchError(err);
-      throw err;
+      throw err; 
     }
   }
 
@@ -72,7 +74,7 @@ export default class ApiService {
    * Метод для обработки ошибок
    * @param {Error} err Объект ошибки
    */
-  static catchError() {
-    // Ошибка логируется при необходимости
+  static catchError(err) {
+    console.error('API Error:', err.message);
   }
 }
