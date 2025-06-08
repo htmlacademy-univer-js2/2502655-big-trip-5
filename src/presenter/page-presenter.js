@@ -5,11 +5,11 @@ import TripInfoPresenter from '../presenter/trip-info-presenter';
 import SortPresenter from './sort-presenter';
 import EventPresenter from './event-presenter';
 import NewEventPresenter from './new-event-presenter';
-import {remove, render} from '../framework/render';
+import { remove, render } from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
-import {SortType} from '../utils/sort';
-import {UpdateType, UserAction} from '../utils/const';
-import {filter, FilterType} from '../utils/filter';
+import { SortType } from '../utils/sort';
+import { UpdateType, UserAction } from '../utils/const';
+import { filter, FilterType } from '../utils/filter';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -17,7 +17,6 @@ const TimeLimit = {
 };
 
 export default class PagePresenter {
-
   #newEventButton = null;
   #eventsListComponent = new EventsListView();
   #loadingComponent = new LoadingView();
@@ -46,7 +45,7 @@ export default class PagePresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({mainContainer, eventsContainer, eventsModel, destinationsModel,newEventButton, offersModel, filterModel, onNewEventDestroy}) {
+  constructor({ mainContainer, eventsContainer, eventsModel, destinationsModel, newEventButton, offersModel, filterModel, onNewEventDestroy }) {
     this.#mainContainer = mainContainer;
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
@@ -70,7 +69,7 @@ export default class PagePresenter {
 
     this.#newEventPresenter = new NewEventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
-      onDataChange: this.#handleViewAction,
+      onDataChange: this.handleViewAction.bind(this),
       onDestroy: onNewEventDestroy,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
@@ -84,9 +83,7 @@ export default class PagePresenter {
   getEvents(sortType) {
     this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.getEvents(sortType);
-    const filteredEvents = filter[this.#filterType](events);
-
-    return filteredEvents;
+    return filter[this.#filterType](events);
   }
 
   init() {
@@ -100,23 +97,15 @@ export default class PagePresenter {
     this.#newEventPresenter.init();
   }
 
-  #handleModeChange = () => {
-    this.#newEventPresenter.destroy();
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-  #handleViewAction = async (actionType, updateType, update) => {
+  async handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        if (!update.id) {
-          console.error('Попытка обновить event без ID:', update);
-          return;
-        }
+        if (!update.id) return;
 
         this.#eventPresenters.get(update.id).setSaving();
         try {
           await this.#eventsModel.updateEvent(updateType, update);
-        } catch (err) {
+        } catch {
           this.#eventPresenters.get(update.id).setAborting();
         }
         break;
@@ -125,23 +114,21 @@ export default class PagePresenter {
         this.#newEventPresenter.setSaving();
         try {
           await this.#eventsModel.addEvent(updateType, update);
-        } catch (err) {
+        } catch {
           this.#newEventPresenter.setAborting();
         }
         break;
 
       case UserAction.DELETE_EVENT: {
         const presenter = this.#eventPresenters.get(update.id);
-        if (!presenter) {
-          return;
-        }
+        if (!presenter) return;
 
         presenter.setDeleting();
         try {
           await this.#eventsModel.deleteEvent(updateType, update);
           presenter.destroy();
           this.#eventPresenters.delete(update.id);
-        } catch (err) {
+        } catch {
           presenter.setAborting();
         }
         break;
@@ -149,7 +136,7 @@ export default class PagePresenter {
     }
 
     this.#uiBlocker.unblock();
-  };
+  }
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
@@ -161,7 +148,7 @@ export default class PagePresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard({resetSortType: true});
+        this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
       case UpdateType.INIT:
@@ -176,6 +163,11 @@ export default class PagePresenter {
     this.#currentSortType = sortType;
     this.#clearBoard();
     this.#renderBoard();
+  };
+
+  #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #renderTripInfo() {
@@ -198,7 +190,6 @@ export default class PagePresenter {
       });
 
       render(this.#noEventsComponent, this.#eventsContainer);
-
       this.#sortPresenter.destroy();
     }
   }
@@ -208,7 +199,7 @@ export default class PagePresenter {
       eventsListContainer: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#handleViewAction,
+      onDataChange: this.handleViewAction.bind(this),
       onModeChange: this.#handleModeChange,
     });
 
@@ -228,12 +219,12 @@ export default class PagePresenter {
 
     this.#renderNoEventsIfNeeded();
 
-    for (let i = 0; i < this.getEvents(this.#currentSortType).length; i++) {
-      this.#renderEvent(this.getEvents(this.#currentSortType)[i]);
+    for (const event of this.getEvents(this.#currentSortType)) {
+      this.#renderEvent(event);
     }
   }
 
-  #clearBoard({resetSortType = false} = {}) {
+  #clearBoard({ resetSortType = false } = {}) {
     this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -255,4 +246,3 @@ export default class PagePresenter {
     this.#renderNoEventsIfNeeded();
   };
 }
-
