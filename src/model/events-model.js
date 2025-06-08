@@ -1,6 +1,5 @@
-import {sort} from '../utils/sort';
-import {UpdateType} from '../utils/const';
-
+import { sort } from '../utils/sort';
+import { UpdateType } from '../utils/const';
 import Observable from '../framework/observable';
 
 export default class EventsModel extends Observable {
@@ -9,7 +8,7 @@ export default class EventsModel extends Observable {
   #destinationsModel = null;
   #offersModel = null;
 
-  constructor({eventsApiService, destinationsModel, offersModel}) {
+  constructor({ eventsApiService, destinationsModel, offersModel }) {
     super();
     this.#eventsApiService = eventsApiService;
     this.#destinationsModel = destinationsModel;
@@ -18,12 +17,10 @@ export default class EventsModel extends Observable {
 
   getEvents(sortType) {
     const sortedEvents = [...this.#events];
-
     if (sortType) {
       sort[sortType](sortedEvents);
       return sortedEvents;
     }
-
     return this.#events;
   }
 
@@ -31,12 +28,12 @@ export default class EventsModel extends Observable {
     try {
       await Promise.all([
         this.#destinationsModel.init(),
-        this.#offersModel.init()
+        this.#offersModel.init(),
       ]);
 
       const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptToClient);
-    } catch(err) {
+    } catch (err) {
       this.#events = [];
     }
 
@@ -51,29 +48,31 @@ export default class EventsModel extends Observable {
     }
 
     try {
-      const response = await this.#eventsApiService.updateEvent(update);
+      const adaptedEvent = this.#adaptToServer(update);
+      const response = await this.#eventsApiService.updateEvent(adaptedEvent);
       const updatedEvent = this.#adaptToClient(response);
 
       this.#events = [
         ...this.#events.slice(0, index),
-        update,
+        updatedEvent,
         ...this.#events.slice(index + 1),
       ];
 
       this._notify(updateType, updatedEvent);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t update event');
     }
   }
 
   async addEvent(updateType, update) {
     try {
-      const response = await this.#eventsApiService.addEvent(update);
+      const adaptedEvent = this.#adaptToServer(update);
+      const response = await this.#eventsApiService.addEvent(adaptedEvent);
       const newEvent = this.#adaptToClient(response);
 
       this.#events = [newEvent, ...this.#events];
       this._notify(updateType, newEvent);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t add event');
     }
   }
@@ -81,7 +80,7 @@ export default class EventsModel extends Observable {
   async deleteEvent(updateType, update) {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
-    if (index === - 1) {
+    if (index === -1) {
       throw new Error('Can\'t delete unexisting event');
     }
 
@@ -90,10 +89,11 @@ export default class EventsModel extends Observable {
 
       this.#events = [
         ...this.#events.slice(0, index),
-        ...this.#events.slice(index + 1)
+        ...this.#events.slice(index + 1),
       ];
+
       this._notify(updateType);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t delete event');
     }
   }
@@ -102,8 +102,8 @@ export default class EventsModel extends Observable {
     const adaptedEvent = {
       ...event,
       basePrice: event['base_price'],
-      dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : event['date_from'],
-      dateTo: event['date_to'] !== null ? new Date(event['date_to']) : event['date_to'],
+      dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : null,
+      dateTo: event['date_to'] !== null ? new Date(event['date_to']) : null,
       isFavorite: event['is_favorite'],
     };
 
@@ -113,5 +113,19 @@ export default class EventsModel extends Observable {
     delete adaptedEvent['is_favorite'];
 
     return adaptedEvent;
+  }
+
+  #adaptToServer(event) {
+    return {
+      type: event.type,
+      'base_price': Number(event.basePrice),
+      'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : event.dateFrom,
+      'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : event.dateTo,
+      'destination': event.destination,
+      'offers': Array.isArray(event.offers)
+        ? event.offers.map((offer) => typeof offer === 'object' ? offer.id : offer)
+        : [],
+      'is_favorite': Boolean(event.isFavorite),
+    };
   }
 }
